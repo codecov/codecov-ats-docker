@@ -16,7 +16,7 @@ inputs:
     required: false
   local_output_path:
     description: 'where to copy the files out of the container'
-    default: 'tests_to_run'
+    default: '.'
     required: false
   install_cli:
     required: false

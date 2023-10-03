@@ -62,7 +62,7 @@ runs:
       name: Ensure container is running
       run: docker ps | grep ${{ inputs.container }}
       shell: bash
-    - run: echo command="docker exec ${{ inputs.container }}" >> $GITHUB_OUTPUT
+    - run: echo command="docker exec ${{ inputs.container }} sh -c" >> $GITHUB_OUTPUT
       name: Set container exec command
       id: command
       shell: bash
@@ -70,30 +70,30 @@ runs:
       if: inputs.install_cli == 'true'
       name: Install Codecov CLI
       shell: bash
-    - run: ${{ steps.command.outputs.command }} codecovcli -u ${{ inputs.codecov_url }} create-commit -t ${{ inputs.codecov_token }} --fail-on-error
+    - run: ${{ steps.command.outputs.command }} "codecovcli -u ${{ inputs.codecov_url }} create-commit -t ${{ inputs.codecov_token }} --fail-on-error"
       name: Create Codecov Commit
       shell: bash
-    - run: ${{ steps.command.outputs.command }} codecovcli -u ${{ inputs.codecov_url }} create-report -t ${{ inputs.codecov_token }} --fail-on-error
+    - run: ${{ steps.command.outputs.command }} "codecovcli -u ${{ inputs.codecov_url }} create-report -t ${{ inputs.codecov_token }} --fail-on-error"
       name: Create Codecov Report
       shell: bash
-    - run: ${{ steps.command.outputs.command }} codecovcli -u ${{ inputs.codecov_url }} static-analysis --token=${{inputs.static_token}}
+    - run: ${{ steps.command.outputs.command }} "codecovcli -u ${{ inputs.codecov_url }} static-analysis --token=${{inputs.static_token}}"
       name: Run Static Analysis
       shell: bash
-    - run: ${{ steps.command.outputs.command }} codecovcli -u ${{ inputs.codecov_url }} label-analysis --base-sha=$(git merge-base HEAD^ ${{ inputs.main_branch }}) --token=${{inputs.static_token}} --dry-run --dry-run-output-path=${{ inputs.output_path }}/codecov_analysis > /dev/null
+    - run: ${{ steps.command.outputs.command }} "codecovcli -u ${{ inputs.codecov_url }} label-analysis --base-sha=$(git merge-base HEAD^ ${{ inputs.main_branch }}) --token=${{inputs.static_token}} --dry-run --dry-run-output-path=${{ inputs.output_path }}/codecov_analysis > /dev/null"
       name: Run Label Analysis
       shell: bash
     - run: |
-        ${{ steps.command.outputs.command }} jq -r '.ats_tests_to_run []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\"//g > ${{ inputs.output_path }}/test_list
+        ${{ steps.command.outputs.command }} "jq -r '.ats_tests_to_run []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\"//g > ${{ inputs.output_path }}/test_list"
         docker cp ${{ inputs.container }}:${{ inputs.output_path }}/test_list ${{ inputs.local_output_path }}/test_list
       name: Parse tests to run
       shell: bash
     - run: |
-        ${{ steps.command.outputs.command }} jq -r '.ats_tests_to_skip []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\"//g > ${{ inputs.output_path }}/test_skip_list
+        ${{ steps.command.outputs.command }} "jq -r '.ats_tests_to_skip []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\"//g > ${{ inputs.output_path }}/test_skip_list"
         docker cp ${{ inputs.container }}:${{ inputs.output_path }}/test_skip_list ${{ inputs.local_output_path }}/test_skip_list
       name: Parse tests to skip
       shell: bash
     - run: |
-        ${{ steps.command.outputs.command }} jq -r '.runner_options | join(" ")' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\"//g > ${{ inputs.output_path }}/runner_options
+        ${{ steps.command.outputs.command }} "jq -r '.runner_options | join(" ")' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\"//g > ${{ inputs.output_path }}/runner_options"
         docker cp ${{ inputs.container }}:${{ inputs.output_path }}/runner_options ${{ inputs.local_output_path }}/runner_options
       name: Parse runner options
       shell: bash
@@ -104,11 +104,11 @@ runs:
       shell: bash
       name: Setup outputs
       id: outputs
-    - run: ${{ steps.command.outputs.command }} ${{ inputs.test_command }} ${{ steps.outputs.outputs.runner_options }} ${{ steps.outputs.outputs.test_list }}
+    - run: ${{ steps.command.outputs.command }} "${{ inputs.test_command }} ${{ steps.outputs.outputs.runner_options }} ${{ steps.outputs.outputs.test_list }}"
       name: Run tests
       if: inputs.run_tests == 'true'
       shell: bash
-    - run: ${{ steps.command.outputs.command }} codecovcli ${{ inputs.codecov_cli_yml_path }} -u ${{ inputs.codecov_url }} do-upload -t ${{ inputs.codecov_token }} ${{ inputs.codecov_cli_upload_args }} --fail-on-error
+    - run: ${{ steps.command.outputs.command }} "codecovcli ${{ inputs.codecov_cli_yml_path }} -u ${{ inputs.codecov_url }} do-upload -t ${{ inputs.codecov_token }} ${{ inputs.codecov_cli_upload_args }} --fail-on-error"
       name: Upload to Codecov
       if: inputs.run_tests == 'true'
       shell: bash

@@ -39,8 +39,12 @@ inputs:
     default: 'https://api.codecov.io'
   codecov_cli_upload_args:
     required: false
+    default: ''
     description: 'List of args to pass to cli on upload. This is kind of a hack pending a more robust solution'
-
+  codecov_cli_yml_path:
+    required: false
+    default: ''
+    description: 'Path to codecov cli yml. Currently expected to include flag as well --codecov-yml-path=codecov_cli.yml for ex.'
 outputs:
   test_skip_list:
     description: "the tests to skip"
@@ -108,7 +112,7 @@ runs:
       name: Run tests
       if: inputs.run_tests == 'true'
       shell: bash
-    - run: ${{ steps.command.outputs.command }} codecovcli -u ${{ inputs.codecov_url }} do-upload ${{ inputs.codecov_cli_upload_args }} --fail-on-error
+    - run: ${{ steps.command.outputs.command }} codecovcli ${{ inputs.codecov_cli_yml_path }} -u ${{ inputs.codecov_url }} do-upload ${{ inputs.codecov_cli_upload_args }} --fail-on-error
       env:
         CODECOV_TOKEN: ${{ inputs.codecov_token }}
       name: Upload to Codecov

@@ -83,17 +83,17 @@ runs:
       name: Run Label Analysis
       shell: bash
     - run: |
-        ${{ steps.command.outputs.command }} "jq -r '.ats_tests_to_run []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\\\\"//g > ${{ inputs.output_path }}/test_list"
+        ${{ steps.command.outputs.command }} "jq -r '.ats_tests_to_run []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\\\"//g > ${{ inputs.output_path }}/test_list"
         docker cp ${{ inputs.container }}:${{ inputs.output_path }}/test_list ${{ inputs.local_output_path }}/test_list
       name: Parse tests to run
       shell: bash
     - run: |
-        ${{ steps.command.outputs.command }} "jq -r '.ats_tests_to_skip []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\\\\"//g > ${{ inputs.output_path }}/test_skip_list"
+        ${{ steps.command.outputs.command }} "jq -r '.ats_tests_to_skip []' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\\\"//g > ${{ inputs.output_path }}/test_skip_list"
         docker cp ${{ inputs.container }}:${{ inputs.output_path }}/test_skip_list ${{ inputs.local_output_path }}/test_skip_list
       name: Parse tests to skip
       shell: bash
     - run: |
-        ${{ steps.command.outputs.command }} "jq -r '.runner_options | join(" ")' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\\\\"//g > ${{ inputs.output_path }}/runner_options"
+        ${{ steps.command.outputs.command }} "jq -r '.runner_options | join(" ")' ${{ inputs.output_path }}/codecov_analysis.json | sed s/\\\"//g > ${{ inputs.output_path }}/runner_options"
         docker cp ${{ inputs.container }}:${{ inputs.output_path }}/runner_options ${{ inputs.local_output_path }}/runner_options
       name: Parse runner options
       shell: bash

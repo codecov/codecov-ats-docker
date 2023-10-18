@@ -37,6 +37,10 @@ inputs:
     required: false
     description: 'URL of Codecov'
     default: 'https://api.codecov.io'
+  codecov_cli_version:
+    required: false
+    description: 'Version of CLI to use'
+    default: '0.3.8'
   codecov_cli_upload_args:
     required: false
     default: ''
@@ -66,7 +70,7 @@ runs:
       name: Set container exec command
       id: command
       shell: bash
-    - run: ${{ steps.command.outputs.command }} "pip install codecov-cli"
+    - run: ${{ steps.command.outputs.command }} "pip install codecov-cli==${{ inputs.codecov_cli_version }}"
       if: inputs.install_cli == 'true'
       name: Install Codecov CLI
       shell: bash

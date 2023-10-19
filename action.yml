@@ -104,7 +104,7 @@ runs:
       shell: bash
       name: Setup outputs
       id: outputs
-    - run: ${{ steps.command.outputs.command }} "${{ inputs.test_command }} ${{ steps.outputs.outputs.runner_options }} ${{ steps.outputs.outputs.test_list }}"
+    - run: ${{ steps.command.outputs.command }} "${{ inputs.test_command }} ${{ steps.outputs.outputs.runner_options }} `cat ${{ inputs.local_output_path }}/test_list`"
       name: Run tests
       if: inputs.run_tests == 'true'
       shell: bash

@@ -1,3 +1,4 @@
+<!-- trigger: enforce-license-compliance workflow -->
 # Codecov ATS Docker
 
 ## Purpose
